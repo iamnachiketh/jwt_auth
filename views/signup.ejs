@@ -1,0 +1,45 @@
+<%- include('partials/header'); -%>
+
+<form>
+    <h1>Sign up</h1>
+    <label for="email">Email</label>
+    <input name="email" type="text" required/>
+    <div class="email error"></div>
+    <label for="password">Password</label>
+    <input name="password" type="password" required/>
+    <div class="password"></div>
+    <button>SIGN UP</button>
+</form>
+
+<script>
+    const form = document.querySelector('form');
+    const emailError = document.querySelector('.email');
+    const passwordError = document.querySelector('.password');
+    form.addEventListener('submit',async(e)=>{
+        e.preventDefault();
+        const email = form.email.value;
+        const password =  form.password.value;
+        emailError.textContent = '';
+        passwordError.textContent = '';
+        try{
+          const res = await fetch('/signup',{
+            method:'POST',
+            body:JSON.stringify({email,password}),
+            headers:{'Content-Type':'application/json'}
+          })
+          const data = await res.json();
+          console.error(data);
+        if(data.ERROR){
+           emailError.textContent = data.ERROR.email;
+           passwordError.textContent = data.ERROR.password;
+        }
+        if(data.message.includes('The user has been created with this id')){
+        location.assign('/');
+    }
+        }catch(e){
+         console.error(e);
+        }
+    })
+</script>
+
+<%- include('partials/footer'); -%>
